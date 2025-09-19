@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本電産：上場維持に関する戦略的討議</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The application is designed as a single-page, vertically scrolling interactive presentation. A sticky top navigation allows the presenter to fluidly move between key discussion stages: the Opening, an analysis of Key Themes, a look at Future Scenarios, and a proposal for Next Steps. This structure was chosen over a static document to create a controlled, engaging narrative flow suitable for a high-stakes meeting. Interactive toggles for 'Themes' and 'Scenarios' allow the presenter to reveal information deliberately, keeping the focus on one point at a time and encouraging dialogue rather than overwhelming the audience. This enhances clarity and reinforces the collaborative tone of the meeting. -->
+    <!-- Visualization & Content Choices: The source document's conceptual diagrams are built using HTML and Tailwind CSS, adhering to the NO SVG/Mermaid constraint. 1) 'Process Flow': HTML flexbox creates a flowchart to visualize internal controls, with color-coded "stress points" for clarity. 2) 'Risk Matrix': A CSS grid forms a 2x2 matrix, a standard and easily understood business visual. 3) 'Virtuous Cycle': Flexbox and border utilities create a circular diagram illustrating the positive scenario. 4) 'Domino Effect': CSS-styled divs represent dominoes, with a JS-triggered CSS transform animation to create a high-impact visualization of cascading risk. These choices turn abstract concepts into tangible, interactive discussion points. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #333;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .domino {
+            transition: all 0.8s ease-in-out;
+            transform-origin: bottom left;
+            cursor: pointer;
+        }
+        .domino-fall {
+            transform: rotate(90deg) translateX(30px) translateY(-20px) !important;
+            opacity: 0.7 !important;
+            background-color: #ef4444 !important;
+        }
+        
+        /* Decision Tree Styles - Clean Grid Layout */
+        .decision-tree {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            min-height: 400px;
+        }
+        
+        .decision-node {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 80px;
+            transition: all 0.3s ease;
+        }
+        
+        .decision-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .start-node {
+            grid-column: 1;
+            grid-row: 2;
+            background: #3b82f6;
+            color: white;
+            border-color: #2563eb;
+        }
+        
+        .yes-node {
+            grid-column: 2;
+            grid-row: 1;
+            background: #10b981;
+            color: white;
+            border-color: #059669;
+        }
+        
+        .no-node {
+            grid-column: 2;
+            grid-row: 3;
+            background: #ef4444;
+            color: white;
+            border-color: #dc2626;
+        }
+        
+        .sub-decision {
+            grid-column: 3;
+            grid-row: 1;
+            background: #f59e0b;
+            color: white;
+            border-color: #d97706;
+        }
+        
+        .sub-decision-converge {
+            grid-column: 3;
+            grid-row: 2;
+            background: #f59e0b;
+            color: white;
+            border-color: #d97706;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+        }
+        
+        .approval-node {
+            grid-column: 4;
+            grid-row: 1;
+            background: #10b981;
+            color: white;
+            border-color: #059669;
+        }
+        
+        .avoid-node {
+            grid-column: 5;
+            grid-row: 1;
+            background: #8b5cf6;
+            color: white;
+            border-color: #7c3aed;
+        }
+        
+        .risk-node {
+            grid-column: 5;
+            grid-row: 3;
+            background: #ef4444;
+            color: white;
+            border-color: #dc2626;
+        }
+        
+        
+        .node-title {
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+        
+        .node-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        
+        /* Clean grid layout - no branch lines needed */
+        
+        
+        /* Professional Decision Tree with Clean Arrows */
+        .decision-tree {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            min-height: 400px;
+            position: relative;
+        }
+        
+        .decision-node {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 80px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .decision-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .start-node {
+            grid-column: 1;
+            grid-row: 2;
+            background: #3b82f6;
+            color: white;
+            border-color: #2563eb;
+        }
+        
+        .yes-node {
+            grid-column: 2;
+            grid-row: 1;
+            background: #10b981;
+            color: white;
+            border-color: #059669;
+        }
+        
+        .no-node {
+            grid-column: 2;
+            grid-row: 3;
+            background: #ef4444;
+            color: white;
+            border-color: #dc2626;
+        }
+        
+        .sub-decision {
+            grid-column: 3;
+            grid-row: 1;
+            background: #f59e0b;
+            color: white;
+            border-color: #d97706;
+        }
+        
+        .sub-decision-converge {
+            grid-column: 3;
+            grid-row: 2;
+            background: #f59e0b;
+            color: white;
+            border-color: #d97706;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+        }
+        
+        .approval-node {
+            grid-column: 4;
+            grid-row: 1;
+            background: #10b981;
+            color: white;
+            border-color: #059669;
+        }
+        
+        .avoid-node {
+            grid-column: 5;
+            grid-row: 1;
+            background: #8b5cf6;
+            color: white;
+            border-color: #7c3aed;
+        }
+        
+        .risk-node {
+            grid-column: 5;
+            grid-row: 3;
+            background: #ef4444;
+            color: white;
+            border-color: #dc2626;
+        }
+        
+        /* Clean Grid Layout - No Arrows Needed */
+        .decision-tree {
+            position: relative;
+        }
+        .chart-container {
+             position: relative;
+             width: 100%;
+             max-width: 800px;
+             margin-left: auto;
+             margin-right: auto;
+             height: auto;
+             min-height: 300px;
+        }
+        @media (min-width: 768px) {
+            .chart-container { min-height: 350px; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200">
+        <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-lg font-bold text-gray-800">日本電産 // 戦略的ブリーフィング</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#opening" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">はじめに</a>
+                        <a href="#themes" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">主要テーマ</a>
+                        <a href="#scenarios" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">将来のシナリオ</a>
+                        <a href="#next-steps" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">次のステップ</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+
+        <section id="opening" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">会議の目的</h2>
+            <p class="mt-4 text-lg text-gray-600">日本電産の上場維持に関する潜在的リスクについて建設的な対話を行い、デューデリジェンスの結果を中立的な立場で提示し、経営陣の見解とリスク軽減計画を理解すること。</p>
+        </section>
+
+        <section id="themes" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">討議のためのテーマ</h2>
+            <p class="mt-4 text-lg text-gray-600">元従業員や監査法人との対話を含むデューデリジェンスに基づき、討議に値する5つの主要なテーマが浮かび上がりました。これらは経営陣の見解をより深く理解するためのシグナルとして提示します。</p>
+            <div class="mt-8">
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-4 overflow-x-auto" aria-label="Tabs">
+                        <button id="themeA-tab" class="theme-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-blue-600 border-blue-600">A: FIRの件・当局の課徴金</button>
+                        <button id="themeE-tab" class="theme-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300">B: 第三者委員会の構成</button>
+                        <button id="themeB-tab" class="theme-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300">C: 中国子会社の値引きの件</button>
+                        <button id="themeC-tab" class="theme-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300">D: リスク資産の減損の恣意性</button>
+                        <button id="themeD-tab" class="theme-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300">E: 上場廃止リスク</button>
+                    </nav>
+                </div>
+                <div class="mt-6">
+                    <div id="themeA-content" class="content-section active">
+                        <div class="space-y-8">
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800">テーマA: FIRの件・当局の課徴金</h3>
+                                <p class="mt-2 text-gray-700"><strong class="font-semibold">シグナル：</strong> 米当局による課徴金処分の可能性について、市場関係者から懸念が提起されており、コンプライアンス体制の強化が急務であることが示唆されています。</p>
+                                
+                                <div class="mt-6 bg-orange-50 border border-orange-200 rounded-lg p-6">
+                                    <h4 class="text-lg font-semibold text-orange-800 mb-4">米国関税分類違反による追徴課税・罰金の実例</h4>
+                                    <p class="text-orange-700 mb-4">日本企業が米国向けの輸出において、関税分類（HSコード）の誤りを理由に、米国税関・国境警備局（CBP）から追徴課税や罰金を科されるケースは実際に発生しています。</p>
+                                    
+                                    <div class="bg-white p-4 rounded-lg border border-orange-200">
+                                        <h5 class="font-semibold text-gray-800 mb-3">米国CBPによる違反レベル別罰金額</h5>
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead class="bg-gray-50">
+                                                    <tr>
+                                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">違反レベル</th>
+                                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">罰金額（最大）</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    <tr>
+                                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">1. 過失 (Negligence)</td>
+                                                        <td class="px-4 py-3 text-sm text-gray-500">不足関税額の2倍</td>
+                                                    </tr>
+                                                    <tr class="bg-yellow-50">
+                                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-yellow-800">2. 重過失 (Gross Negligence)</td>
+                                                        <td class="px-4 py-3 text-sm text-yellow-700">不足関税額の4倍</td>
+                                                    </tr>
+                                                    <tr class="bg-red-50">
+                                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-red-900">3. 詐欺 (Fraud)</td>
+                                                        <td class="px-4 py-3 text-sm text-red-700">貨物の米国内での販売価格の全額</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
+                                            <p class="text-red-700 text-sm"><strong>注意：</strong> 詐欺レベルでの違反の場合、貨物の販売価格全額が罰金となるため、巨額の損失に直結する可能性があります。特に複数回の違反や組織的な関与が疑われる場合、罰金額が大幅に増加するリスクがあります。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                <h4 class="text-center font-medium text-gray-700 mb-4">図解：規制リスク評価フレームワーク</h4>
+                                <div class="chart-container flex items-center justify-center">
+                                    <div class="flex items-center space-x-2 text-xs sm:text-sm">
+                                        <div class="text-center">
+                                            <div class="p-3 sm:p-4 bg-gray-100 rounded-md border border-gray-300">内部監査</div>
+                                        </div>
+                                        <div class="text-gray-400 font-mono">&rarr;</div>
+                                        <div class="text-center">
+                                            <div class="p-3 sm:p-4 bg-yellow-100 rounded-md border-2 border-yellow-400 ring-2 ring-yellow-200">当局調査</div>
+                                            <div class="text-yellow-700 mt-1 font-semibold">リスク要因</div>
+                                        </div>
+                                        <div class="text-gray-400 font-mono">&rarr;</div>
+                                        <div class="text-center">
+                                            <div class="p-3 sm:p-4 bg-yellow-100 rounded-md border-2 border-yellow-400 ring-2 ring-yellow-200">課徴金処分</div>
+                                            <div class="text-yellow-700 mt-1 font-semibold">リスク要因</div>
+                                        </div>
+                                        <div class="text-gray-400 font-mono">&rarr;</div>
+                                        <div class="text-center">
+                                            <div class="p-3 sm:p-4 bg-gray-100 rounded-md border border-gray-300">市場影響</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="themeE-content" class="content-section">
+                        <div class="space-y-8">
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800">テーマB: 第三者委員会の構成</h3>
+                                <p class="mt-2 text-gray-700"><strong class="font-semibold">シグナル：</strong> 過去の重大な企業不正事件において、信頼性の高い第三者委員会の設置が企業の信頼回復と上場維持において重要な役割を果たしており、適切な委員会構成が今後の対応において重要な要素となることが示唆されています。</p>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                                    <h4 class="text-lg font-semibold text-gray-800">第三者委員会構成例：実績豊富な専門家による調査体制</h4>
+                                    <p class="mt-1 text-sm text-gray-600">過去の重大な企業不正事件において、信頼性の高い第三者委員会が設置された事例を参考として提示いたします。</p>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">役職・氏名</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">具体的な経歴</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">過去に関与した主な調査案件（公表分）</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">委員長<br>平尾 覚 氏<br>(弁護士)</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">1993年に検事任官後、東京地方検察庁特別捜査部（東京地検特捜部）や法務省に勤務。2008年に弁護士登録し、現在は四大法律事務所の一つである西村あさひ法律事務所のパートナーを務める。</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">・オリンパスの損失隠し事件<br>・IHIのデータ改ざん問題<br>・その他、多数の企業の不正調査・危機管理対応</td>
+                                            </tr>
+                                            <tr class="bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">委員<br>白井 真 氏<br>(弁護士)</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">弁護士として活動する中で、証券取引等監視委員会（SESC）に出向。SESCでは、上場企業の不正会計（粉飾決算）やインサイダー取引などの調査・摘発実務を経験。</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">・オルツの不適切会計<br>・ブックオフの不適切会計<br>・ENECHANGEの不適切会計<br>・その他、多数の上場企業で第三者委員会の委員を歴任</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">委員<br>井上 寅喜 氏<br>(公認会計士)</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">世界的な会計事務所であるアーサー・アンダーセンを経て、あずさ監査法人（KPMG Japan）で代表社員を務めた会計監査の専門家。現在は株式会社アカウンティング・アドバイザリーの代表。</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">・グレイステクノロジーの粉飾決算<br>・川崎重工業の品質不正問題<br>・その他、多数の企業の会計不正調査に関与</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                                <h4 class="text-lg font-semibold text-blue-800 mb-3">第三者委員会の重要性</h4>
+                                <ul class="space-y-2 text-blue-700 text-sm">
+                                    <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">•</span><span><strong>信頼性の確保：</strong> 検察・監視委員会経験者や大手監査法人出身者による構成により、調査の客観性と専門性が確保される</span></li>
+                                    <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">•</span><span><strong>市場の信頼回復：</strong> 実績豊富な専門家による調査結果は、投資家や市場関係者からの信頼回復に大きく貢献する</span></li>
+                                    <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">•</span><span><strong>上場維持への貢献：</strong> 適切な第三者委員会の設置は、上場廃止リスクの軽減と企業価値の回復に直結する</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="themeB-content" class="content-section">
+                        <div class="space-y-8">
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800">テーマC: 中国子会社の値引きの件</h3>
+                                <p class="mt-2 text-gray-700"><strong class="font-semibold">シグナル：</strong> テクノモーター事業は、芝浦機械および安川電機の事業を統合した合併・買収により形成された事業体であり、過去において価格設定プロセスの透明性に関する課題が存在していました。</p>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                                    <h4 class="text-lg font-semibold text-gray-800">類似事例分析：在庫・価格操作関連の不正会計</h4>
+                                    <p class="mt-1 text-sm text-gray-600">過去の在庫資産や価格設定を利用した不正会計事例を分析し、類似のリスク要因が存在する場合の潜在的影響について検討いたします。</p>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">企業名</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">発覚時期</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">問題の概要</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ニデック事例との類似点</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">株価への影響</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">株式会社ジャパンディスプレイ</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2019年</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">在庫資産を過大に計上し、利益をかさ上げしていた</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">【在庫資産の過大計上】棚卸資産の評価を不適切に行い、利益をかさ上げする手口が非常に似ている</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">不正発覚後、株価は大幅に下落。その後も低迷し、経営再建の過程で1円での第三者割当増資（大規模な希薄化）も実施</td>
+                                            </tr>
+                                            <tr class="bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">株式会社ファインシンター</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024年</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">海外子会社で棚卸資産の数量や金額を不正に操作していた</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">【海外子会社での在庫不正】ガバナンスが届きにくい海外子会社を舞台に、棚卸資産を利用した利益操作が行われた点が共通</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">第一報（5月）後、株価は約30%下落。その後も調査の長期化懸念から軟調に推移</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">高周波熱錬株式会社</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2021年</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">タイの子会社で長年にわたり売上や棚卸資産を過大に計上していた</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">【海外子会社での在庫不正】ファインシンターと同様に、海外子会社で在庫資産を利用した不正会計が行われた点が共通している</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">発覚後、株価は一時的に20%以上下落。その後、業績回復に伴い株価も持ち直したが、信頼回復には時間を要した</td>
+                                            </tr>
+                                            <tr class="bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">株式会社東芝</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2015年</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">「バイセル取引」という手法で利益を前倒しで計上していた</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">【サプライヤー取引の悪用】サプライヤーとの取引を複雑化させ、会計基準を逸脱した利益計上を行っていた点が類似する</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">不正発覚から数ヶ月で株価は約半分に下落。その後も巨額損失の発覚が続き、最終的に上場廃止に至る遠因となった</td>
+                                            </tr>
+                                            <tr class="bg-red-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-900">旧カネボウ株式会社</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500">2004年</td>
+                                                <td class="px-6 py-4 text-sm text-red-500">経営陣主導で10年以上にわたり粉飾決算を実行。不良在庫の資産計上などを行っていた</td>
+                                                <td class="px-6 py-4 text-sm text-red-500">【利益創出のための資産操作】利益を良く見せるという目的のために、棚卸資産を含む資産全般を不正に操作したという動機・目的が共通</td>
+                                                <td class="px-6 py-4 text-sm text-red-500">粉飾発覚後、経営破綻。株価は暴落し、最終的に2004年に上場廃止。株主価値はほぼゼロとなった</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                <h4 class="text-center font-medium text-gray-700 mb-2">図解：海外子会社ガバナンスリスクマトリックス</h4>
+                                <div class="chart-container grid grid-cols-2 grid-rows-2 gap-1 bg-gray-200 p-2 rounded-md relative text-xs sm:text-sm">
+                                    <div class="absolute -left-12 top-1/2 -translate-y-1/2 -rotate-90 font-semibold text-gray-600">影響度</div>
+                                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-8 font-semibold text-gray-600">発生可能性</div>
+                                    <div class="bg-gray-50 p-2 rounded-sm flex flex-col justify-center items-center text-center"><span class="font-medium text-gray-500">影響度：低 / 可能性：低</span></div>
+                                    <div class="bg-yellow-50 p-2 rounded-sm flex flex-col justify-center items-center text-center"><span class="font-medium text-yellow-800">影響度：低 / 可能性：高</span><div class="mt-2 p-2 bg-yellow-200 text-yellow-900 rounded-md w-full">価格設定の不透明性</div></div>
+                                    <div class="bg-yellow-50 p-2 rounded-sm flex flex-col justify-center items-center text-center"><span class="font-medium text-yellow-800">影響度：高 / 可能性：低</span><div class="mt-2 p-2 bg-yellow-200 text-yellow-900 rounded-md w-full">ガバナンス体制の不備</div></div>
+                                    <div class="bg-red-50 p-2 rounded-sm flex flex-col justify-center items-center text-center"><span class="font-medium text-red-800">影響度：高 / 可能性：高</span><div class="mt-2 p-2 bg-red-200 text-red-900 rounded-md w-full">値引きの恣意性</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="themeC-content" class="content-section">
+                        <div class="space-y-8">
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800">テーマD: リスクのある資産の減損の恣意性およびマネジメントの関与の可能性</h3>
+                                <p class="mt-2 text-gray-700"><strong class="font-semibold">シグナル：</strong> 資産減損の判定プロセスにおいて、客観的な基準に基づく判断が適切に行われているかについて、監査法人から指摘がなされており、マネジメントの関与の透明性が重要な課題となっています。</p>
+                            </div>
+                            
+                            <div class="bg-orange-50 border border-orange-200 rounded-lg p-6">
+                                <h4 class="text-lg font-semibold text-orange-800 mb-4">監査上の主要な検討事項：のれん減損テスト（第50期有価証券報告書より）</h4>
+                                
+                                <div class="space-y-4">
+                                    <div class="bg-white p-4 rounded-lg border border-orange-200">
+                                        <h5 class="font-semibold text-gray-800 mb-3">■ 対象資産の概要</h5>
+                                        <ul class="space-y-2 text-sm text-gray-700">
+                                            <li><strong>のれん総額：</strong> 363,480百万円（総資産の12.7％）</li>
+                                            <li><strong>AMECセグメントののれん：</strong> 20,075百万円</li>
+                                            <li><strong>減損テスト頻度：</strong> 年1回（毎年1月1日）</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="bg-white p-4 rounded-lg border border-orange-200">
+                                        <h5 class="font-semibold text-gray-800 mb-3">■ 監査上の主要な検討事項として決定した理由</h5>
+                                        <ul class="space-y-2 text-sm text-gray-700">
+                                            <li><strong>測定の不確実性：</strong> 事業計画の売上高予測、費用予測、成長率、税引前割引率等の重要な仮定に経営者の判断が伴う</li>
+                                            <li><strong>業績の悪化：</strong> AMECセグメントのセグメント損益が2期連続赤字</li>
+                                            <li><strong>金額的重要性：</strong> AMECセグメントののれんが金額的に重要</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="bg-white p-4 rounded-lg border border-orange-200">
+                                        <h5 class="font-semibold text-gray-800 mb-3">■ 監査上の対応手続</h5>
+                                        <ul class="space-y-2 text-sm text-gray-700">
+                                            <li>・ 経営者への質問実施及び取締役会等の議事録閲覧</li>
+                                            <li>・ のれん減損テストに関する内部統制の理解・評価</li>
+                                            <li>・ 企業価値評価専門家による評価方法の検証</li>
+                                            <li>・ 事業計画の承認済み計画との整合性検討</li>
+                                            <li>・ 売上高・費用予測の市場環境との整合性検討</li>
+                                            <li>・ 前年度計画と実績の比較検討</li>
+                                            <li>・ 税引前割引率の検討及びストレステスト実施</li>
+                                            <li>・ 成長率の産業予測データとの整合性検証</li>
+                                            <li>・ 感応度分析の合理性検討及び再計算実施</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                <h4 class="text-center font-medium text-gray-700 mb-4">図解：資産減損判定プロセス</h4>
+                                <div class="chart-container flex items-center justify-center">
+                                    <div class="flex items-center space-x-2 text-xs sm:text-sm">
+                                        <div class="text-center">
+                                            <div class="p-3 sm:p-4 bg-gray-100 rounded-md border border-gray-300">資産評価</div>
+                                        </div>
+                                        <div class="text-gray-400 font-mono">&rarr;</div>
+                                        <div class="text-center">
+                                            <div class="p-3 sm:p-4 bg-yellow-100 rounded-md border-2 border-yellow-400 ring-2 ring-yellow-200">減損判定</div>
+                                            <div class="text-yellow-700 mt-1 font-semibold">恣意性リスク</div>
+                                        </div>
+                                        <div class="text-gray-400 font-mono">&rarr;</div>
+                                        <div class="text-center">
+                                            <div class="p-3 sm:p-4 bg-yellow-100 rounded-md border-2 border-yellow-400 ring-2 ring-yellow-200">マネジメント関与</div>
+                                            <div class="text-yellow-700 mt-1 font-semibold">透明性リスク</div>
+                                        </div>
+                                        <div class="text-gray-400 font-mono">&rarr;</div>
+                                        <div class="text-center">
+                                            <div class="p-3 sm:p-4 bg-gray-100 rounded-md border border-gray-300">監査承認</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="themeD-content" class="content-section">
+                        <div class="space-y-8">
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800">テーマE: 上場廃止リスク</h3>
+                                <p class="mt-2 text-gray-700"><strong class="font-semibold">シグナル：</strong> 上記の複数のリスク要因が重複することにより、上場廃止の可能性について市場関係者から懸念が提起されており、包括的なリスク管理体制の構築が急務となっています。</p>
+                                
+                                <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
+                                    <h4 class="text-lg font-semibold text-blue-800 mb-4">有価証券報告書提出延長の根拠と上場廃止リスク</h4>
+                                    <p class="text-blue-700 mb-4">金融商品取引法第24条第1項に基づき、やむを得ない理由により有価証券報告書の提出が遅延する場合があります。これらの「やむを得ない理由」自体が、企業のガバナンスや財務状況に重大な問題があることを示唆し、結果として上場廃止リスクを高める可能性があります。</p>
+                                    
+                                    <div class="space-y-4">
+                                        <div class="bg-white p-4 rounded-lg border border-blue-200">
+                                            <h5 class="font-semibold text-gray-800 mb-2">■ やむを得ない理由（企業内容等開示ガイドライン）</h5>
+                                            <ul class="space-y-2 text-sm text-gray-700">
+                                                <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">①</span><span><strong>停電によるシステムトラブル</strong>（債権債務が確定できない等）</span></li>
+                                                <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">②</span><span><strong>民事再生法に基づく再生手続きの申立て</strong>（債権債務が確定できない等）</span></li>
+                                                <li class="flex items-start"><span class="text-red-600 mr-2 mt-1">③</span><span><strong class="text-red-600">過去の有報等に重要な虚偽記載があり、過年度の連結財務諸表等の訂正が必要な場合</strong></span></li>
+                                                <li class="flex items-start"><span class="text-red-600 mr-2 mt-1">④</span><span><strong class="text-red-600">連結財務諸表等に重要な虚偽表示の疑義が発見され、監査人がその内容を確認する必要があるため期限内に監査報告書を受領できない場合</strong></span></li>
+                                                <li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">⑤</span><span><strong>外国会社が本国の法令等により期限までに有報等を提出できない場合</strong></span></li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                                            <h5 class="font-semibold text-red-800 mb-2">⚠️ 特に注意すべき延長理由</h5>
+                                            <p class="text-red-700 text-sm">理由③・④の「虚偽記載・虚偽表示の疑義」は、組織的な不正会計やガバナンス不全の深刻な兆候であり、上場廃止に直結する可能性が極めて高いです。これらの理由での延長申請は、企業の信頼性に致命的な影響を与える可能性があります。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                                    <h4 class="text-lg font-semibold text-gray-800">有価証券報告書再延期事例</h4>
+                                    <p class="mt-1 text-sm text-gray-600">過去の有価証券報告書提出遅延事例を分析し、類似のリスク要因が存在する場合の潜在的影響について検討いたします。</p>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">企業名</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">対象年度</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">提出期間</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">主な理由</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">その後の影響・結果</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">GFA株式会社</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2022年度</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">約7ヶ月</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">連結子会社における架空売上が発覚</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">特設注意市場銘柄に指定、株価の大幅な下落</td>
+                                            </tr>
+                                            <tr class="bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">株式会社クシム</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023年度</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">約6ヶ月</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">暗号資産交換業に関する会計処理の妥当性</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">複数回の期限延長、監理銘柄に指定</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">株式会社ファインシンター</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023年度</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">約6ヶ月</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">海外子会社における棚卸資産の不適切な会計処理</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">複数回の期限延長、投資家の信頼低下</td>
+                                            </tr>
+                                            <tr class="bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">株式会社ジャパンディスプレイ</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2018年度</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">約6ヶ月</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">過去の決算における在庫の過大計上</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">特設注意市場銘柄に指定、継続的な経営再建</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">株式会社東芝</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2014年度</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">約5.5ヶ月</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">長年にわたる大規模な利益水増し</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">東証二部へ降格、最終的に非公開化</td>
+                                            </tr>
+                                            <tr class="bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">株式会社アウトソーシング</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2021年度</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">約5ヶ月</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">海外M&A案件に関する不適切な会計処理</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">上場廃止の危機、最終的に非公開化</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">株式会社IHI</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2022年度</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">約4.5ヶ月</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">子会社におけるエンジンデータの不正行為</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">監督官庁からの是正勧告、ブランドイメージ毀損</td>
+                                            </tr>
+                                            <tr class="bg-red-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-900">株式会社Nuts</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500">2018年度</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500">無期限</td>
+                                                <td class="px-6 py-4 text-sm text-red-500">虚偽のIRや粉飾決算などの重大な会計不正</td>
+                                                <td class="px-6 py-4 text-sm text-red-500">上場廃止、破産手続開始、経営陣逮捕</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                                <h4 class="text-lg font-semibold text-yellow-800">重要な観察事項</h4>
+                                <ul class="mt-3 space-y-2 text-yellow-700">
+                                    <li class="flex items-start"><span class="text-yellow-500 mr-3 mt-1">•</span><span>提出遅延期間が長くなるほど、上場廃止リスクが高まる傾向</span></li>
+                                    <li class="flex items-start"><span class="text-yellow-500 mr-3 mt-1">•</span><span>海外子会社関連の会計処理問題が複数事例で確認</span></li>
+                                    <li class="flex items-start"><span class="text-yellow-500 mr-3 mt-1">•</span><span>複数回の延長申請は市場の信頼を著しく損なう</span></li>
+                                    <li class="flex items-start"><span class="text-yellow-500 mr-3 mt-1">•</span><span>組織的な不正が発覚した場合、回復が極めて困難</span></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                <h4 class="text-center font-medium text-gray-700 mb-2">図解：上場廃止リスク統合マトリックス</h4>
+                                <div class="chart-container grid grid-cols-2 grid-rows-2 gap-1 bg-gray-200 p-2 rounded-md relative text-xs sm:text-sm">
+                                    <div class="absolute -left-12 top-1/2 -translate-y-1/2 -rotate-90 font-semibold text-gray-600">影響度</div>
+                                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-8 font-semibold text-gray-600">発生可能性</div>
+                                    <div class="bg-gray-50 p-2 rounded-sm flex flex-col justify-center items-center text-center"><span class="font-medium text-gray-500">影響度：低 / 可能性：低</span></div>
+                                    <div class="bg-yellow-50 p-2 rounded-sm flex flex-col justify-center items-center text-center"><span class="font-medium text-yellow-800">影響度：低 / 可能性：高</span><div class="mt-2 p-2 bg-yellow-200 text-yellow-900 rounded-md w-full">個別リスク要因</div></div>
+                                    <div class="bg-yellow-50 p-2 rounded-sm flex flex-col justify-center items-center text-center"><span class="font-medium text-yellow-800">影響度：高 / 可能性：低</span><div class="mt-2 p-2 bg-yellow-200 text-yellow-900 rounded-md w-full">複合リスク要因</div></div>
+                                    <div class="bg-red-50 p-2 rounded-sm flex flex-col justify-center items-center text-center"><span class="font-medium text-red-800">影響度：高 / 可能性：高</span><div class="mt-2 p-2 bg-red-200 text-red-900 rounded-md w-full">上場廃止リスク</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="scenarios" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">シナリオ分析：今後の道筋</h2>
+            <p class="mt-4 text-lg text-gray-600">これらのテーマは、2つの異なる将来の道筋を示唆しています。当社が最も生産的なコースを確実に歩む方法について議論したいと思います。</p>
+            
+            <div class="mt-8 bg-white rounded-lg border border-gray-200 p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-6">有価証券報告書延長提出の意思決定フロー</h3>
+                <div class="flex justify-center">
+                    <div class="decision-tree">
+                        <!-- 開始点 -->
+                        <div class="decision-node start-node">
+                            <div class="node-content">
+                                <div class="node-title">有価証券報告書<br>延長提出するか？</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 分岐点1 - Yes -->
+                        <div class="decision-node yes-node">
+                            <div class="node-content">
+                                <div class="node-title">延長提出</div>
+                                <div class="node-subtitle">Yes</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 分岐点1 - No -->
+                        <div class="decision-node no-node">
+                            <div class="node-content">
+                                <div class="node-title">延長提出しない</div>
+                                <div class="node-subtitle">No</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 金融庁許可分岐 -->
+                        <div class="decision-node sub-decision">
+                            <div class="node-content">
+                                <div class="node-title">金融庁許可<br>取得できるか？</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 金融庁許可Yes -->
+                        <div class="decision-node approval-node">
+                            <div class="node-content">
+                                <div class="node-title">上場継続<br>調査継続</div>
+                                <div class="node-subtitle">リスク管理強化</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 金融庁許可No - テクニカル手段分岐 -->
+                        <div class="decision-node sub-decision-converge">
+                            <div class="node-content">
+                                <div class="node-title">テクニカル手段で<br>監理銘柄指定回避<br>できるか？</div>
+                            </div>
+                        </div>
+                        
+                        <!-- テクニカル手段回避Yes -->
+                        <div class="decision-node avoid-node">
+                            <div class="node-content">
+                                <div class="node-title">監理銘柄指定回避</div>
+                                <div class="node-subtitle">上場維持</div>
+                            </div>
+                        </div>
+                        
+                        <!-- テクニカル手段回避No -->
+                        <div class="decision-node risk-node">
+                            <div class="node-content">
+                                <div class="node-title">監理銘柄指定</div>
+                                <div class="node-subtitle">上場廃止リスク</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Clean Grid Layout - Flow is obvious from positioning -->
+                        
+                    </div>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h4 class="font-semibold text-green-800 mb-2">推奨ルート</h4>
+                        <p class="text-green-700 text-sm">延長提出 → 金融庁許可取得 → 上場継続・調査継続</p>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <h4 class="font-semibold text-red-800 mb-2">高リスクルート</h4>
+                        <p class="text-red-700 text-sm">テクニカル手段失敗 → 監理銘柄指定（上場廃止リスク）</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                    <h3 class="text-xl font-semibold text-green-800">シナリオ1: 積極的な強化の道筋</h3>
+                    <p class="mt-2 text-green-700">会社は、内部統制の独立したレビューを依頼したり、透明性を高めたり、健全な文化を強化したりすることで、シグナルに積極的に対処します。市場はこれらの行動を評価し、信頼が強化されます。</p>
+                    <div class="mt-4 bg-white p-4 rounded-lg border border-gray-200">
+                        <h4 class="text-center font-medium text-gray-700 mb-4">好循環</h4>
+                        <div class="chart-container flex flex-col items-center justify-center space-y-2 text-center text-sm">
+                             <div class="p-3 bg-gray-100 rounded-md w-48">積極的なガバナンス</div>
+                             <div class="text-gray-400 text-xl">&darr;</div>
+                             <div class="p-3 bg-gray-100 rounded-md w-48">統制の強化</div>
+                             <div class="text-gray-400 text-xl">&darr;</div>
+                             <div class="p-3 bg-gray-100 rounded-md w-48">投資家の信頼向上</div>
+                             <div class="text-gray-400 text-xl">&darr;</div>
+                             <div class="p-3 bg-gray-100 rounded-md w-48">株価評価の上昇</div>
+                             <div class="text-gray-400 text-xl -rotate-90 transform">&#8634;</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+                    <h3 class="text-xl font-semibold text-red-800">シナリオ2: 浸食リスクの道筋</h3>
+                    <p class="mt-2 text-red-700">シグナルが対処されないままだと、事態は悪化する可能性があります。軽微な問題が市場に誤解されたり、監査所見が株価の急落を引き起こしたり、規制当局が調査を開始したりして、負のスパイラルに陥る可能性があります。</p>
+                     <div class="mt-4 bg-white p-4 rounded-lg border border-gray-200">
+                        <h4 class="text-center font-medium text-gray-700 mb-1">未対処リスクのドミノ効果</h4>
+                        <div class="text-center mb-4">
+                           <button id="domino-trigger" class="text-xs bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600 transition shadow-lg">エフェクト開始</button>
+                        </div>
+                        <div class="chart-container flex items-center justify-center space-x-1 sm:space-x-2 min-h-[300px]">
+                            <div class="domino w-6 h-24 sm:w-8 sm:h-32 bg-gray-300 rounded text-center flex items-center justify-center text-[8px] sm:text-[10px] p-1 transform-gpu">潜在的な弱点</div>
+                            <div class="domino w-6 h-24 sm:w-8 sm:h-32 bg-gray-300 rounded text-center flex items-center justify-center text-[8px] sm:text-[10px] p-1 transform-gpu" style="transition-delay: 0.1s;">報告エラー</div>
+                            <div class="domino w-6 h-24 sm:w-8 sm:h-32 bg-gray-300 rounded text-center flex items-center justify-center text-[8px] sm:text-[10px] p-1 transform-gpu" style="transition-delay: 0.2s;">監査所見</div>
+                            <div class="domino w-6 h-24 sm:w-8 sm:h-32 bg-gray-300 rounded text-center flex items-center justify-center text-[8px] sm:text-[10px] p-1 transform-gpu" style="transition-delay: 0.3s;">市場の信頼喪失</div>
+                            <div class="domino w-6 h-24 sm:w-8 sm:h-32 bg-gray-300 rounded text-center flex items-center justify-center text-[8px] sm:text-[10px] p-1 transform-gpu" style="transition-delay: 0.4s;">規制当局の調査</div>
+                            <div class="domino w-6 h-24 sm:w-8 sm:h-32 bg-red-400 rounded text-center flex items-center justify-center text-[8px] sm:text-[10px] p-1 font-bold text-white transform-gpu" style="transition-delay: 0.5s;">上場廃止</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="next-steps" class="scroll-mt-20 border-t border-gray-200 pt-12">
+            <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">結論と次のステップ</h2>
+             <p class="mt-4 text-lg text-gray-600">私たち双方が会社の最善の利益を心から願っていることは明らかです。「積極的な強化」の道筋は達成可能であり、私たちはそのために皆様を支援する準備ができています。</p>
+            <div class="mt-8 bg-white p-6 rounded-lg border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">共同行動の提案</h3>
+                <p class="mt-2 text-gray-700">次のステップとして、これらの認識されているリスクをより詳細にマッピングし、既存の軽減計画を見直すための小規模なワーキンググループの結成にご協力いただけますでしょうか？</p>
+                <p class="mt-4 text-gray-700 font-semibold">「このアプローチについて、皆様の最初のご感想はいかがでしょうか？私たちが提供できる追加情報はございますか？」</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4,
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            const themeTabs = document.querySelectorAll('.theme-tab');
+            const themeContents = document.querySelectorAll('#themes .content-section');
+            themeTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    themeTabs.forEach(t => {
+                        t.classList.remove('text-blue-600', 'border-blue-600');
+                        t.classList.add('text-gray-500', 'border-transparent');
+                    });
+                    tab.classList.add('text-blue-600', 'border-blue-600');
+                    tab.classList.remove('text-gray-500', 'border-transparent');
+
+                    const targetId = tab.id.replace('-tab', '-content');
+                    themeContents.forEach(content => {
+                        content.classList.toggle('active', content.id === targetId);
+                    });
+                });
+            });
+
+            // Domino effect functionality
+            const dominoTrigger = document.getElementById('domino-trigger');
+            const dominos = document.querySelectorAll('.domino');
+            let isFallen = false;
+            
+            if (dominoTrigger && dominos.length > 0) {
+                dominoTrigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                isFallen = !isFallen;
+                    
+                    dominos.forEach((domino, index) => {
+                    if (isFallen) {
+                        domino.classList.add('domino-fall');
+                            // Apply styles directly for better compatibility
+                            domino.style.transform = 'rotate(90deg) translateX(30px) translateY(-20px)';
+                            domino.style.opacity = '0.7';
+                            domino.style.backgroundColor = '#ef4444';
+                    } else {
+                        domino.classList.remove('domino-fall');
+                            // Reset styles
+                            domino.style.transform = '';
+                            domino.style.opacity = '';
+                            domino.style.backgroundColor = '';
+                    }
+                });
+                dominoTrigger.textContent = isFallen ? 'リセット' : 'エフェクト開始';
+            });
+            }
+        });
+    </script>
+</body>
+</html>
