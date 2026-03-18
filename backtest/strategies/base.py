@@ -14,14 +14,24 @@ class BaseStrategy(ABC):
     a ranked DataFrame of stocks to trade.
     """
 
-    def __init__(self, top_n: int = 20, hold_days: int = 1):
+    def __init__(
+        self,
+        top_n: int = 20,
+        hold_days: int = 1,
+        target_pct: float = None,   # Profit target (e.g. 0.03 = 3%)
+        stop_pct: float = None,     # Stop loss (e.g. 0.02 = 2%)
+    ):
         """
         Args:
-            top_n:     Number of stocks to hold in portfolio each day
-            hold_days: Number of days to hold each position (1 = overnight)
+            top_n:      Number of stocks to hold in portfolio each day
+            hold_days:  Maximum days to hold (adaptive exit triggers earlier)
+            target_pct: Exit when return exceeds this threshold (e.g. 0.03)
+            stop_pct:   Exit when loss exceeds this threshold (e.g. 0.02)
         """
         self.top_n = top_n
         self.hold_days = hold_days
+        self.target_pct = target_pct
+        self.stop_pct = stop_pct
 
     @abstractmethod
     def generate_signals(self, target_date: date, data: dict) -> pd.DataFrame:

@@ -129,33 +129,37 @@ class BacktestEngine:
 
             daily_scores_cache[signal_date] = signals
 
-            # Execute trades: buy at entry_date open, sell at exit_date open
+            # Execute trades with adaptive exit (target/stop/max-hold)
             day_returns = []
             for _, sig in signals.head(strategy.top_n).iterrows():
                 code = str(sig["code"])[:4]
                 entry_price = self._get_price(code, entry_date, "open")
-                exit_price  = self._get_price(code, exit_date,  "open")
-
-                if entry_price is None or exit_price is None:
+                if entry_price is None:
                     continue
 
-                # Apply slippage (buy high, sell low)
                 entry_adj = entry_price * (1 + self.slippage)
-                exit_adj  = exit_price  * (1 - self.slippage)
+                actual_exit_date, exit_price, exit_reason = self._adaptive_exit(
+                    code, entry_date, entry_adj, trading_dates, i + 1, strategy
+                )
+                if exit_price is None:
+                    continue
 
+                exit_adj = exit_price * (1 - self.slippage)
                 ret = (exit_adj - entry_adj) / entry_adj
                 day_returns.append(ret)
 
                 trade_records.append({
                     "signal_date":  signal_date,
                     "entry_date":   entry_date,
-                    "exit_date":    exit_date,
+                    "exit_date":    actual_exit_date,
                     "code":         code,
                     "entry_price":  round(entry_price, 2),
                     "exit_price":   round(exit_price, 2),
                     "return_pct":   round(ret * 100, 4),
                     "score":        sig.get("score", sig.get("composite_score", None)),
                     "is_win":       ret > 0,
+                    "exit_reason":  exit_reason,
+                    "hold_days":    (actual_exit_date - entry_date).days if actual_exit_date else 0,
                 })
 
             daily_pnl[entry_date] = np.mean(day_returns) if day_returns else 0.0
@@ -245,6 +249,68 @@ class BacktestEngine:
             return float(row[price_type].iloc[0])
         except (KeyError, ValueError, IndexError):
             return None
+
+    def _adaptive_exit(
+        self,
+        code: str,
+        entry_date: date,
+        entry_price_adj: float,  # Already slippage-adjusted entry
+        trading_dates: list,
+        entry_idx: int,
+        strategy: BaseStrategy,
+    ):
+        """
+        Adaptive exit: sell when target hit, stop-loss hit, or max_hold reached.
+
+        For each hold day after entry:
+        - Check intraday high: if high > entry * (1 + target) → exit at target (stop profit)
+        - Check intraday low:  if low  < entry * (1 - stop)  → exit at stop (stop loss)
+        - Otherwise: hold until max_hold, exit at next open
+
+        Returns: (exit_date, exit_price, exit_reason)
+        """
+        target = getattr(strategy, "target_pct", None)
+        stop   = getattr(strategy, "stop_pct", None)
+        max_hold = getattr(strategy, "hold_days", 1)
+
+        for hold_day in range(1, max_hold + 1):
+            hold_idx = entry_idx + hold_day
+            if hold_idx >= len(trading_dates):
+                break
+            hold_date = trading_dates[hold_idx]
+
+            # Get intraday data for this hold day
+            high  = self._get_price(code, hold_date, "high")
+            low   = self._get_price(code, hold_date, "low")
+            close = self._get_price(code, hold_date, "close")
+            open_p = self._get_price(code, hold_date, "open")
+
+            if open_p is None:
+                continue
+
+            # Check target hit (use intraday high)
+            if target and high is not None:
+                target_price = entry_price_adj * (1 + target)
+                if high >= target_price:
+                    return hold_date, target_price, "target"
+
+            # Check stop-loss hit (use intraday low)
+            if stop and low is not None:
+                stop_price = entry_price_adj * (1 - stop)
+                if low <= stop_price:
+                    return hold_date, stop_price, "stop"
+
+            # Last hold day: exit at open
+            if hold_day == max_hold:
+                return hold_date, open_p, "max_hold"
+
+        # Fallback: exit at entry_date + 1 open
+        fallback_idx = entry_idx + 1
+        if fallback_idx < len(trading_dates):
+            fb_date = trading_dates[fallback_idx]
+            fb_price = self._get_price(code, fb_date, "open")
+            return fb_date, fb_price, "fallback"
+        return None, None, "no_exit"
 
     def _load_data(self, signal_date: date, strategy: BaseStrategy) -> dict:
         """Load all data needed for signal generation on signal_date."""

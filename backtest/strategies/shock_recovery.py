@@ -56,12 +56,26 @@ class ShockRecoveryStrategy(BaseStrategy):
         top_n: int = 20,
         shock_threshold: float = SHOCK_THRESHOLD,
         volume_spike_min: float = VOLUME_SPIKE_MIN,
-        exit_type: str = "next_open",   # 'next_open' or 'same_close'
+        hold_days: int = 3,         # Max 3 days
+        target_pct: float = 0.03,   # +3% profit target
+        stop_pct: float = 0.02,     # -2% stop loss
     ):
-        super().__init__(top_n=top_n, hold_days=1)
+        """
+        Args:
+            shock_threshold:  Minimum drop to qualify (-3% default)
+            volume_spike_min: Minimum volume vs 20-day avg (1.8x default)
+            hold_days:        Maximum hold duration (3 days default)
+            target_pct:       Exit profit target (3% default)
+            stop_pct:         Exit stop loss (2% default)
+        """
+        super().__init__(
+            top_n=top_n,
+            hold_days=hold_days,
+            target_pct=target_pct,
+            stop_pct=stop_pct,
+        )
         self.shock_threshold  = shock_threshold
         self.volume_spike_min = volume_spike_min
-        self.exit_type        = exit_type
 
     def generate_signals(self, target_date: date, data: dict) -> pd.DataFrame:
         """
