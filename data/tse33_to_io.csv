@@ -1,0 +1,40 @@
+tse33_code,tse33_name,io_sector_id,io_sector_name_ja,io_sector_name_en,role,meti_iip_code,meti_3ai_code,jsic_major
+0050,水産業,003,漁業,Fisheries,primary,,A03,A
+0100,鉱業,004,鉱業,Mining,primary,,,B
+0200,建設業,025,建設,Construction,primary,,,D
+0300,食料品,005,飲食料品,Food and beverages,primary,C09,,E09-10
+0400,繊維製品,006,繊維,Textiles,primary,C10,,E10-11
+0500,パルプ・紙,007,パルプ・紙・紙製品,Pulp paper and paper products,primary,C12,,E12-15
+0600,化学,009,化学製品,Chemicals,primary,C16,,E16
+0600,化学,011,プラスチック製品,Plastic products,secondary,C18,,E18
+0700,医薬品,010,医薬品,Pharmaceuticals,primary,C17,,E17
+0800,石油・石炭製品,010,石油・石炭製品,Petroleum and coal products,primary,C19,,E19
+0900,ゴム製品,012,ゴム製品,Rubber products,primary,C20,,E20
+1000,窯業・土石製品,013,窯業・土石製品,Ceramics glass and stone products,primary,C21,,E21
+1100,鉄鋼,014,鉄鋼,Iron and steel,primary,C24,,E22-23
+1200,非鉄金属,015,非鉄金属,Non-ferrous metals,primary,C25,,E24-26
+1300,金属製品,016,金属製品,Fabricated metal products,primary,C26,,E27
+1400,機械,017,はん用機械,General purpose machinery,primary,C28,,E28
+1400,機械,018,生産用機械,Production machinery,secondary,C28,,E29
+1500,電気機器,020,電子部品・デバイス,Electronic components and devices,primary,C27,,E30
+1500,電気機器,021,電気機械,Electrical machinery,secondary,C27,,E31
+1500,電気機器,022,情報・通信機器,ICT equipment,secondary,C27,,E32-33
+1600,輸送用機器,023,輸送機械,Transportation equipment,primary,C31,,E34
+1700,精密機器,019,業務用機械,Business use machinery,primary,C30,,E35-37
+1800,その他製品,024,その他の製造工業製品,Other manufacturing products,primary,,,E38-40
+1900,電力・ガス業,026,電力・ガス・熱供給,Electricity gas and heat supply,primary,,,F
+2000,陸運業,031,道路輸送,Road transportation,primary,,B53,G53-54
+2000,陸運業,031,鉄道輸送,Rail transportation,secondary,,B51,G51-52
+2100,海運業,031,水運,Water transportation,primary,,B55,G55
+2200,空運業,031,航空輸送,Air transportation,primary,,B56,G56
+2300,倉庫・運輸関連,031,運輸附帯サービス,Transport support services,primary,,B57-59,G57-59
+2400,情報・通信業,032,情報通信,Information and communications services,primary,,H,H
+2500,卸売業,028,商業,Commerce (wholesale),primary,,I50,I50
+2600,小売業,028,商業,Commerce (retail),primary,,I51-57,I51-57
+2700,銀行業,029,金融,Finance,primary,,J61-62,J61-62
+2800,証券・商品先物取引業,029,金融,Finance securities,primary,,J63-65,J63-65
+2900,保険業,029,保険,Insurance,primary,,J66-68,J66-68
+3000,不動産業,030,不動産,Real estate,primary,,L,L
+3100,サービス業,037,その他のサービス,Other services,primary,,S,various
+3200,その他,037,その他,Other activities,primary,,,various
+3300,水産業,003,漁業,Fisheries (2nd),primary,,A03,A
